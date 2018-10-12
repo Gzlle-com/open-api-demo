@@ -23,6 +23,7 @@ public class Test {
         String url = "http://openapi-test.gzlle.com/token";
         Map<String,String> map = new HashMap<>();
         map.put("grantType","client_credentials");
+        //appKey、appSecret在saas平台的开发者配置获取
         map.put("appKey","227398938947223552");
         map.put("appSecret","4E5122E7D658C3ADD0BE49C0A1BEFD61");
         LinkedHashMap<String,String> headers = new LinkedHashMap<String,String>();
@@ -37,7 +38,9 @@ public class Test {
         Map<String,String> map1 = new HashMap<>();
         map1.put("name","罗豪强");
         map1.put("phone","13047220479");
+        //使用32位以类的随机字符串
         map1.put("nonce","01234567890123456789012345678901");
+        //sign使用SignUtil工具类生成签名
         map1.put("sign","FBE4ABACFD147946634196B60DAB2C9BE6687DE7BDB0268B686AFE3695DABDAE");
         LinkedHashMap<String,String> headers1 = new LinkedHashMap<String,String>();
         headers1.put("Content-Type", "application/json; charset=UTF-8");
