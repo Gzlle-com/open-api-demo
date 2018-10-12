@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.gzlle.open.api.demo.utils;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
