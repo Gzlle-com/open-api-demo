@@ -52,7 +52,7 @@ public class HttpUtil {
         }
         return result;
     }
-    public static String doGet(String url, String charset){
+    public static String doGet(String url, String charset, LinkedHashMap<String,String> headers){
         CloseableHttpClient httpClient = null;
         HttpGet httpGet = null;
         String result = null;
@@ -60,7 +60,12 @@ public class HttpUtil {
             httpClient = HttpClients.createDefault();
             httpGet = new HttpGet(url);
             //设置请求头
-            httpGet.setHeader("Authorization","Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiaW1hZ2luZS1tYWluIiwiaW1hZ2luZS1vcGVuIiwiaW1hZ2luZS1hdXRoIl0sInNjb3BlIjpbInByb2ZpbGUiXSwiZXhwIjoxNTM5MTY4MjgyLCJqdGkiOiI3NDFiOWFkZS0xMDk0LTRiMTEtYjJjNC01ZDMxMjU0YjgyMjAiLCJjbGllbnRfaWQiOiIyMjczOTg5Mzg5NDcyMjM1NTIifQ.0b1nEoDZpCfUDV7Go2dco7jI85ywOfJcQaJinGesBiGI6TyE5nDa6Wo8rKiFbDToi3xo6GPQWZpZcMNNxpthpPASLJDZDGycS6xRytpz3VMEObmz8n11441l7_tuVzmKCsJtOCLsHo3HIzNAfm1gpU7v_z0IEDLGD6Rb9EgFZUo");
+            //给HttpPost 设置请求头
+            if (headers != null) {
+                for (String key : headers.keySet()) {
+                    httpGet.setHeader(key, headers.get(key));
+                }
+            }
             HttpResponse response = httpClient.execute(httpGet);
             HttpEntity resEntity = response.getEntity();
             result = EntityUtils.toString(resEntity,charset);

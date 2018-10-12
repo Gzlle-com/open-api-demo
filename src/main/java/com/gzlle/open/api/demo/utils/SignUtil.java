@@ -5,15 +5,6 @@ import javax.crypto.spec.SecretKeySpec;
 import java.util.*;
 
 public class SignUtil {
-    public static void main(String[] args) {
-        SortedMap<String, String> sortedMap = new TreeMap<>();
-        sortedMap.put("name", "罗豪强");
-        sortedMap.put("nonce", "01234567890123456789012345678901");
-        sortedMap.put("phone", "13047220479");
-        String sign = createOpenSign(sortedMap, "227398938947223552");
-        System.out.println(sign);
-    }
-
     public static String createOpenSign(SortedMap<String, String> parameters, String
             key) {
         String sortedString = getSortedString(parameters, key);

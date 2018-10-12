@@ -2,11 +2,11 @@ package com.gzlle.open.api.demo.contracts;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.gzlle.open.api.demo.auth.AccessToken;
 import com.gzlle.open.api.demo.utils.HttpUtil;
+import com.gzlle.open.api.demo.utils.SignUtil;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 业务签约相关接口demo
@@ -15,72 +15,76 @@ public class ContractsDemo {
     private static String openApiBaseUrl = "https://openapi.gzlle.com";
 
     public static void main(String[] args) throws Exception {
-        String url = "/token";
+        //调用AccessToken类的方法获取accessToken
+        String url = openApiBaseUrl + "/token";
+        String charsect = "UTF-8";
         Map<String, String> map = new HashMap<>();
         map.put("grantType", "client_credentials");
         //appKey、appSecret在saas平台的开发者配置获取
-        map.put("appKey", "227398938947223552");
-        map.put("appSecret", "4E5122E7D658C3ADD0BE49C0A1BEFD61");
+        map.put("appKey", "1111111111111111");
+        map.put("appSecret", "2222222222222222222");
         LinkedHashMap<String, String> headers = new LinkedHashMap<String, String>();
         headers.put("Content-Type", "application/json; charset=UTF-8");
-        //调用获取accessToken方法
-        String result = HttpUtil.doPost(url, map, "UTF-8", headers);
-        System.out.print(result);
-        JsonObject jsonObject = (JsonObject) new JsonParser().parse(result).getAsJsonObject();
-        String accessToken = jsonObject.get("accessToken").getAsString();
+        String accessToken = AccessToken.getAccessToken(url, map, charsect, headers);
+        String authorization = "Bearer" +  " " + accessToken;
 
+        //调用SignUtil工具类获取sign签名值
+        SortedMap<String, String> parameters = new TreeMap<>();
+        parameters.put("name","工资来了");
+        parameters.put("phone","18888888888");
+        parameters.put("nonce","01234567890123456789012345678901");
+        String sign = SignUtil.createOpenSign(parameters,"1111111111111111");
+
+        //调用添加自由职业者接口，返回Json数据，里面包含添加的职业者的id
         String url1 = openApiBaseUrl + "/contracts/employees/add";
         Map<String, String> map1 = new HashMap<>();
-        map1.put("name", "罗豪强");
+        map1.put("name", "工资来了");
         map1.put("phone", "18888888888");
         //使用32位以类的随机字符串
         map1.put("nonce", "01234567890123456789012345678901");
         //sign使用SignUtil工具类生成签名
-        map1.put("sign", "FBE4ABACFD147946634196B60DAB2C9BE6687DE7BDB0268B686AFE3695DABDAE");
+        map1.put("sign", sign);
         LinkedHashMap<String, String> headers1 = new LinkedHashMap<String, String>();
-
+        //添加请求头信息
         headers1.put("Content-Type", "application/json; charset=UTF-8");
-        headers1.put("Authorization", "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsiaW1hZ2luZS1tYWluIiwiaW1hZ2luZS1vcGVuIiwiaW1hZ2luZS1hdXRoIl0sInNjb3BlIjpbInByb2ZpbGUiXSwiZXhwIjoxNTM5MTY4MjgyLCJqdGkiOiI3NDFiOWFkZS0xMDk0LTRiMTEtYjJjNC01ZDMxMjU0YjgyMjAiLCJjbGllbnRfaWQiOiIyMjczOTg5Mzg5NDcyMjM1NTIifQ.0b1nEoDZpCfUDV7Go2dco7jI85ywOfJcQaJinGesBiGI6TyE5nDa6Wo8rKiFbDToi3xo6GPQWZpZcMNNxpthpPASLJDZDGycS6xRytpz3VMEObmz8n11441l7_tuVzmKCsJtOCLsHo3HIzNAfm1gpU7v_z0IEDLGD6Rb9EgFZUo");
+        headers1.put("Authorization", authorization);
         //调用添加自由职业者方法
-        String result2 = HttpUtil.doPost(url1, map1, "UTF-8", headers1);
+        String result2 = HttpUtil.doPost(url1, map1, charsect, headers1);
         System.out.print(result2);
+        JsonObject jsonObject = (JsonObject) new JsonParser().parse(result2).getAsJsonObject();
+        String employeeId = jsonObject.get("employeeId").getAsString();
 
-
-        String url2 = "http://openapi-test.gzlle.com/contracts/employees/userToken/227850788230135808";
-        //调用获取用户token方法
-        String result3 = HttpUtil.doGet(url2, "UTF-8");
+        //调用获取用户token接口,返回Json数据，里面包含userToken
+        String url2 = openApiBaseUrl + "/contracts/employees/userToken/" + employeeId;
+        LinkedHashMap<String, String> headers2 = new LinkedHashMap<String, String>();
+        headers2.put("Authorization", authorization);
+        String result3 = HttpUtil.doGet(url2, charsect, headers2);
         System.out.print(result3);
 
-        String url3 = "http://openapi-test.gzlle.com/contracts/employees/status/227850788230135808";
-        //调用查询签约结果方法
-        String result4 = HttpUtil.doGet(url3, "UTF-8");
+        //调用查询签约结果接口
+        String url3 = openApiBaseUrl + "/contracts/employees/status/" + employeeId;
+        LinkedHashMap<String, String> headers3 = new LinkedHashMap<String, String>();
+        headers3.put("Authorization", authorization);
+        String result4 = HttpUtil.doGet(url3, charsect, headers3);
         System.out.print(result4);
 
-        //在saas平台开发者配置设置回调连接地址
-        String url4 = "https://www.baidu.com";
+        //调用回调签约结果接口,返回任何Json格式数据都表示成功
+        //在saas平台开发者配置设置回调连接地址，没设置不能回调
+        String url4 = "http://www.baidu.com";
         Map<String, String> map2 = new HashMap<>();
         //在saas平台开发者配置得到corpId
-        map2.put("corpId", "227374883552624640");
+        map2.put("corpId", "33333333333333");
         //回调通知类型；1业务签约
         map2.put("noticeType", "1");
         //获取accessToken时用的nonce,sign
         map2.put("nonce", "01234567890123456789012345678901");
-        map2.put("sign", "FBE4ABACFD147946634196B60DAB2C9BE6687DE7BDB0268B686AFE3695DABDAE");
+        map2.put("sign", sign);
         //合同签署状态,0未签署,1已签署,2/3签署中,9作废
         map2.put("contractStatus", "1");
         //添加的自由职业者唯一id
-        map2.put("employeeId", "227850788230135808");
-        LinkedHashMap<String, String> headers2 = new LinkedHashMap<String, String>();
-        String result5 = HttpUtil.doPost(url4, map2, "UTF-8", headers2);
+        map2.put("employeeId", employeeId);
+        LinkedHashMap<String, String> headers4 = new LinkedHashMap<String, String>();
+        String result5 = HttpUtil.doPost(url4, map2, charsect, headers4);
         System.out.print(result5);
     }
-
-    /**
-     * 获取userToken demo
-     */
-    public static void getUserToken() {
-
-    }
-
-
 }
