@@ -12,13 +12,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class AuthDemo {
-    public static String getAccessToken(String url, Map<String, String> map, String charset, LinkedHashMap<String, String> headers) {
-        String result = HttpUtil.doPost(url, map, charset, headers);
-        JsonObject jsonObject = (JsonObject) new JsonParser().parse(result).getAsJsonObject();
-        String accessToken = jsonObject.get("accessToken").getAsString();
-        return accessToken;
-    }
-
     public static AccessToken getAccessToken(String appKey, String appSecret) {
         String url = Constants.API_BASE_URL + "/token";
         String charset = "UTF-8";
