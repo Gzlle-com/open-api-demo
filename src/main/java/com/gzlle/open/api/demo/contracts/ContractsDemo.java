@@ -2,7 +2,9 @@ package com.gzlle.open.api.demo.contracts;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.gzlle.open.api.demo.auth.AccessToken;
+import com.gzlle.open.api.demo.auth.AuthDemo;
+import com.gzlle.open.api.demo.domain.AccessToken;
+import com.gzlle.open.api.demo.utils.Constants;
 import com.gzlle.open.api.demo.utils.HttpUtil;
 import com.gzlle.open.api.demo.utils.SignUtil;
 
@@ -12,47 +14,52 @@ import java.util.*;
  * 业务签约相关接口demo
  */
 public class ContractsDemo {
-    private static String openApiBaseUrl = "https://openapi.gzlle.com";
 
-    public static void main(String[] args) throws Exception {
-        //调用AccessToken类的方法获取accessToken
-        String url = openApiBaseUrl + "/token";
-        String charsect = "UTF-8";
-        Map<String, String> map = new HashMap<>();
-        map.put("grantType", "client_credentials");
-        //appKey、appSecret在saas平台的开发者配置获取
-        map.put("appKey", "1111111111111111");
-        map.put("appSecret", "2222222222222222222");
-        LinkedHashMap<String, String> headers = new LinkedHashMap<String, String>();
-        headers.put("Content-Type", "application/json; charset=UTF-8");
-        String accessToken = AccessToken.getAccessToken(url, map, charsect, headers);
-        String authorization = "Bearer" +  " " + accessToken;
 
-        //调用SignUtil工具类获取sign签名值
-        SortedMap<String, String> parameters = new TreeMap<>();
-        parameters.put("name","工资来了");
-        parameters.put("phone","18888888888");
-        parameters.put("nonce","01234567890123456789012345678901");
-        String sign = SignUtil.createOpenSign(parameters,"1111111111111111");
-
+    public static void addEmployee(String token) {
         //调用添加自由职业者接口，返回Json数据，里面包含添加的职业者的id
-        String url1 = openApiBaseUrl + "/contracts/employees/add";
-        Map<String, String> map1 = new HashMap<>();
+        String url1 = Constants.API_BASE_URL + "/contracts/employees/add";
+        SortedMap<String, String> map1 = new TreeMap<>();
         map1.put("name", "工资来了");
         map1.put("phone", "18888888888");
         //使用32位以类的随机字符串
         map1.put("nonce", "01234567890123456789012345678901");
+
         //sign使用SignUtil工具类生成签名
-        map1.put("sign", sign);
+        map1.put("sign", SignUtil.createOpenSign(map1, "key"));
+
         LinkedHashMap<String, String> headers1 = new LinkedHashMap<String, String>();
         //添加请求头信息
         headers1.put("Content-Type", "application/json; charset=UTF-8");
-        headers1.put("Authorization", authorization);
+        headers1.put("Authorization", token);
         //调用添加自由职业者方法
-        String result2 = HttpUtil.doPost(url1, map1, charsect, headers1);
+        String result2 = HttpUtil.doPost(url1, map1, "UTF-8", headers1);
         System.out.print(result2);
         JsonObject jsonObject = (JsonObject) new JsonParser().parse(result2).getAsJsonObject();
-        String employeeId = jsonObject.get("employeeId").getAsString();
+//        String employeeId = jsonObject.get("employeeId").getAsString();
+
+    }
+
+    public static void main(String[] args) throws Exception {
+        //获取accessToken
+        AccessToken accessToken = AuthDemo.getAccessToken("appKey", "appSecret");
+
+        //token过期请自己完善逻辑
+
+        //添加自由职业者
+        addEmployee(accessToken.getAccessToken());
+
+
+
+        String authorization = "Bearer" + " " + accessToken;
+
+        //调用SignUtil工具类获取sign签名值
+        SortedMap<String, String> parameters = new TreeMap<>();
+        parameters.put("name", "工资来了");
+        parameters.put("phone", "18888888888");
+        parameters.put("nonce", "01234567890123456789012345678901");
+        String sign = SignUtil.createOpenSign(parameters, "1111111111111111");
+
 
         //调用获取用户token接口,返回Json数据，里面包含userToken
         String url2 = openApiBaseUrl + "/contracts/employees/userToken/" + employeeId;
