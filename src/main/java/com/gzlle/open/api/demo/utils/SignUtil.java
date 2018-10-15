@@ -68,4 +68,21 @@ public class SignUtil {
         return hs.toString().toUpperCase();
     }
 
+
+    /**
+     * 获取随机字符串
+     *
+     * @param length
+     * @return
+     */
+    public static String buildNonce(int length) {
+        String charts = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz0123456789";
+        int max = charts.length();
+        String nonce = "";
+        for (int i = 0; i < length; i++) {
+            nonce += charts.charAt((int) (Math.random() * max));
+        }
+        return nonce;
+    }
+
 }

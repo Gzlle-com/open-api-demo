@@ -1,8 +1,6 @@
 package com.gzlle.open.api.demo.auth;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.gzlle.open.api.demo.domain.AccessToken;
 import com.gzlle.open.api.demo.utils.Constants;
 import com.gzlle.open.api.demo.utils.HttpUtil;
@@ -11,6 +9,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * 认证相关接口
+ */
 public class AuthDemo {
     public static AccessToken getAccessToken(String appKey, String appSecret) {
         String url = Constants.API_BASE_URL + "/token";

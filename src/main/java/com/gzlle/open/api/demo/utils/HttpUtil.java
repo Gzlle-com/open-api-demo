@@ -15,16 +15,9 @@ import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * @Creator: hadeslong
- * @Created: 2018/10/12 下午3:20
- * @Description:
- * @Modifier: hadeslong
- * @Modified By: 2018/10/12 下午3:20
- */
 public class HttpUtil {
 
-    public static String doPost(String url, Map<String,String> map, String charset, LinkedHashMap<String,String> headers){
+    public static String doPost(String url, Map<String, String> map, String charset, LinkedHashMap<String, String> headers) {
         CloseableHttpClient httpClient = null;
         HttpPost httpPost = null;
         String result = null;
@@ -33,7 +26,7 @@ public class HttpUtil {
             httpPost = new HttpPost(url);
             Gson gson = new Gson();
             //转换成json字符串
-            String jsonString=gson.toJson(map);
+            String jsonString = gson.toJson(map);
             //设置编码格式防止出现中文乱码
             StringEntity stringEntity = new StringEntity(jsonString, Charset.forName("UTF-8"));
             //给HttpPost 设置请求头
@@ -46,13 +39,14 @@ public class HttpUtil {
             httpPost.setEntity(stringEntity);
             HttpResponse response = httpClient.execute(httpPost);
             HttpEntity resEntity = response.getEntity();
-            result = EntityUtils.toString(resEntity,charset);
+            result = EntityUtils.toString(resEntity, charset);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return result;
     }
-    public static String doGet(String url, String charset, LinkedHashMap<String,String> headers){
+
+    public static String doGet(String url, String charset, LinkedHashMap<String, String> headers) {
         CloseableHttpClient httpClient = null;
         HttpGet httpGet = null;
         String result = null;
@@ -68,7 +62,7 @@ public class HttpUtil {
             }
             HttpResponse response = httpClient.execute(httpGet);
             HttpEntity resEntity = response.getEntity();
-            result = EntityUtils.toString(resEntity,charset);
+            result = EntityUtils.toString(resEntity, charset);
         } catch (IOException e) {
             e.printStackTrace();
         }

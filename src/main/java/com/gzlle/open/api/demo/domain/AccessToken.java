@@ -1,12 +1,5 @@
 package com.gzlle.open.api.demo.domain;
 
-/**
- * @Creator: hadeslong
- * @Created: 2018/10/12 下午5:53
- * @Description:
- * @Modifier: hadeslong
- * @Modified By: 2018/10/12 下午5:53
- */
 public class AccessToken {
     //token
     private String accessToken;
